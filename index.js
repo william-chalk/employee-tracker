@@ -1,18 +1,7 @@
 const { prompt } = require("inquirer");
 const mysql = require("mysql2");
+const {addDepartment,addEmployee,addRole,viewRoles,viewDepartments,viewEmployees,updateRole} = require('./utils/userPrompts');
 require("console.table");
-
-const db = mysql
-  .createConnection(
-    {
-      host: "localhost",
-      user: "root",
-      password: "rootroot",
-      database: "employees",
-    },
-    console.log("Connected to database")
-  )
-  .promise();
 
 const mainMenu = async () => {
   const { choice } = await prompt([
@@ -30,9 +19,30 @@ const mainMenu = async () => {
           value: "VIEW_DEPARTMENTS",
         },
         {
+          name: 'View ALL Roles',
+          value:'VIEW_ROLES'
+        },
+        {
+          name: "Add a Department",
+          value: 'ADD_DEPARTMENT'
+        },
+        {
+          name: 'Add a Role',
+          value: 'ADD_ROLE'
+        },
+        {
+          name: 'Add a Employee',
+          value: 'ADD_EMPLOYEE'
+        },
+        {
+          name: 'Update Employee Role',
+          value: 'UPDATE_EMPLOYEE_ROLE'
+        },
+        {
           name: "Exit",
           value: "EXIT",
-        },
+        }
+        
       ],
     },
   ]);
@@ -44,6 +54,21 @@ const mainMenu = async () => {
     case "VIEW_DEPARTMENTS":
       viewDepartments();
       break;
+    case 'VIEW_ROLES':
+      viewRoles();
+      break;
+    case 'ADD_DEPARTMENT':
+      addDepartment();
+      break;
+    case 'ADD_ROLE':
+      addRole();
+      break;
+    case 'ADD_EMPLOYEE':
+      addEmployee();
+      break;
+    case 'UPDATE_EMPLOYEE_ROLE':
+      updateRole();
+      break;
     case "EXIT":
       process.exit();
     default:
@@ -51,16 +76,7 @@ const mainMenu = async () => {
   }
 };
 
-const viewEmployees = async () => {
-  const [employeeData] = await db.query(`SELECT * FROM employee`);
-  console.table(employeeData);
-  mainMenu();
-};
-
-const viewDepartments = async () => {
-  const [departmentData] = await db.query(`SELECT * FROM deparment`);
-  console.table(departmentData);
-  mainMenu();
-};
-
 mainMenu();
+
+
+
