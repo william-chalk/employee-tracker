@@ -1,5 +1,5 @@
 USE employee_tracker;
-INSERT INTO department (department_name)
+INSERT INTO department (name)
 VALUES ("Sales"),
     ("IT"),
     ("Legal"),

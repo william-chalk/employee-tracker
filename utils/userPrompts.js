@@ -47,7 +47,7 @@ const mainMenu = () => {
         addEmployee();
         break;
       case 'Update Employee Role':
-        //function
+        updateEmployee();
         break;
       case "Exit":
         process.exit();
@@ -57,7 +57,7 @@ const mainMenu = () => {
 };
 
 const viewAllEmployees = () =>{
-  db.query(`SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;`,(err,res)=>{
+  db.query(`SELECT * FROM employee`,(err,res)=>{
     if(err) throw err;
     console.table(res);
     mainMenu();
@@ -209,16 +209,47 @@ const addDepartment = () =>{
   })
 }
 
+const updateEmployee = () =>{
+  db.query(`SELECT employee.last_name,role.title FROM employee JOIN role ON employee.role_id = role.id;`,(err,res)=>{
+    if(err) throw err;
+    console.table(res);
+    prompt([
+      {
+        name: 'lastName',
+        type: 'rawlist',
+        choices: () =>{
+          const lastName = [];
+          for(let i=0;i<res.length;i++){
+            lastName.push(res[i].last_name);
+          }
+          return lastName;
+        },
+        message:'What is the employees LAST name?'
+      },
+      {
+        name: 'role',
+        type: 'rawlist',
+        message: 'What is the employees new title?',
+        choices: listRoles()
+      }
+    ]).then(function(val){
+      const roleID = listRoles().indexOf(val.role) + 1;
+      db.query(`UPDATE employee SET ? WHERE employee.id = ?`,[{
+        last_name: val.lastName
+      },
+      {
+        role_id: roleID
+      }],(err)=>{
+        if(err) throw err;
+        console.table(val);
+        mainMenu();
+      });
+    });
+  });
+}
+
 
 
 module.exports = {
-  mainMenu,
-  viewAllEmployees,
-  viewAllDepartments,
-  viewAllRoles,
-  viewEmployeesByRole,
-  viewEmployeesByDepartments,
-  addEmployee,
-  addRole,
-  addDepartment
+  mainMenu
 }
