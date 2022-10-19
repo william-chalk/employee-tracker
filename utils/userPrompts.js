@@ -97,6 +97,17 @@ const viewEmployeesByRole = () =>{
   });
 }
 
+const departArr = [];
+const listDepartments = () =>{
+  db.query(`SELECT * FROM department`,(err,res)=>{
+    if(err) throw err;
+    for(let i = 0; i<res.length;i++){
+      departArr.push(res[i].name);
+    }
+  });
+  return departArr;
+}
+
 const roleArr = [];
 const listRoles = () =>{
   db.query(`SELECT * FROM role`,(err,res)=>{
@@ -174,11 +185,20 @@ const addRole = () =>{
         name: 'Salary',
         type: 'input',
         message: 'Please enter the Role Salary.'
+      },
+      {
+        name: 'Department',
+        type: 'rawlist',
+        message: 'Please choose the roles department',
+        choices: listDepartments()
       }
     ]).then((res)=>{
+      const departmentID = listDepartments().indexOf(res.choice) + 1;
+
       db.query(`INSERT INTO role SET ?`,{
         title: res.Title,
-        salary: res.Salary
+        salary: res.Salary,
+        department_id: departmentID
       },(err)=>{
         if(err) throw err;
         console.table(res);
